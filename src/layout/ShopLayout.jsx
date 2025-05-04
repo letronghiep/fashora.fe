@@ -7,7 +7,7 @@ import Sidebar from "~/components/seller/Sidebar";
 import SpinLoading from "../components/loading/SpinLoading";
 import { apiOrigin } from "../constants";
 import { axiosInstance } from "../core/axiosInstance";
-import withRoleCheck from "../hoc/WithRoleCheck";
+import withRoleCheck from "../hoc/withRoleCheck";
 import { getAuth } from "../stores/slices/authSlice";
 
 function ShopLayout({ children }) {
