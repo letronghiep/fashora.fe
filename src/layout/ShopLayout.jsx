@@ -1,4 +1,4 @@
-import { Layout, theme } from "antd";
+import { Layout, notification, theme } from "antd";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
@@ -24,10 +24,19 @@ function ShopLayout({ children }) {
       try {
         await axiosInstance.get(`${apiOrigin}/auth/refresh-token`);
       } catch (error) {
-        localStorage.removeItem("token");
-        localStorage.removeItem("client_id");
-        window.location.href = "/login";
-        console.log(error);
+        notification.info({
+          message: "Phiên đăng nhập hết hạn",
+          description: "Vui lòng đăng nhập lại",
+          placement: "topRight",
+          duration: 3,
+          showProgress: true,
+          onClose: () => {
+            localStorage.removeItem("token");
+            localStorage.removeItem("client_id");
+            const currentUrl = window.location.href;
+            navigate(`/login?nextUrl=${encodeURIComponent(currentUrl)}`);
+          },
+        });
       }
     }
     getRefreshToken();
