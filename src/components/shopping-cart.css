@@ -1,0 +1,51 @@
+.shopping-cart-drawer {
+  width: 400px;
+  max-width: 100%;
+}
+
+.shopping-cart-drawer .ant-card-head {
+  border-bottom: none;
+  padding: 16px;
+}
+
+.shopping-cart-drawer .ant-card-body {
+  padding: 0 16px 16px;
+}
+
+.cart-item {
+  padding-bottom: 16px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.cart-item:last-child {
+  border-bottom: none;
+}
+
+.cart-item img {
+  border-radius: 4px;
+}
+
+.cart-item .ant-input-number {
+  width: 48px !important;
+}
+
+.cart-item .ant-input-number-input {
+  text-align: center;
+  padding: 0;
+}
+
+.cart-item .ant-btn-sm {
+  min-width: 24px;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.klarna-info .ant-btn-link {
+  height: auto;
+  padding: 0;
+  font-size: inherit;
+} 
