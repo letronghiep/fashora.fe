@@ -1,7 +1,7 @@
 import { Breadcrumb, Button, Flex, Input, Segmented, Typography } from "antd";
 import { useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
-import FlashSaleTable from "../../../components/table/FlashsaleTable";
+import FlashSaleTable from "../../../components/table/FlashSaleTable";
 import { useGetFlashsaleQuery } from "../../../apis/flashsaleApis";
 
 function FlashSalePage() {
