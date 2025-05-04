@@ -6,23 +6,6 @@ const baseURL = import.meta.env.VITE_SERVER_URL;
 // Tạo instance Axios
 export const axiosInstance = axios.create({
   baseURL,
-  headers: {
-    "Access-Control-Allow-Origin": true,
-    "Access-Control-Allow-Methods": [
-      "GET",
-      "POST",
-      "PUT",
-      "PATCH",
-      "DELETE",
-      "OPTIONS",
-    ],
-    "Access-Control-Allow-Headers": [
-      "Origin",
-      "Authorization",
-      "Content-Type",
-      "Accept",
-    ],
-  },
   withCredentials: true,
 });
 
