@@ -17,7 +17,7 @@ function ProductSlide({ products, title }) {
   };
   return (
     <div>
-      {products.length > 0 && (
+      {products && products.length > 0 && (
         <>
           <Typography.Title
             level={4}

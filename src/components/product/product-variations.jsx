@@ -25,7 +25,7 @@ function ProductVariation({ variations, selectedOptions, setSelectedOptions }) {
                   }`}
                   onClick={() => handleSelect(variation.name, option)}
                 >
-                  {variation.images[optionIndex] && (
+                  {variation?.images[optionIndex] && (
                     <img
                       src={modifyImageDimensions(
                         variation.images[optionIndex],
