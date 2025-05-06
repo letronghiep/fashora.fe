@@ -37,7 +37,7 @@ function CheckoutPage() {
   const [discountCode, setDiscountCode] = useState("");
   const [shopOrderIds, setShopOrderIds] = useState([]);
   const { data, isLoading } = useGetCartQuery();
-  const { data: vouchersData } = useGetDiscountsQuery({
+  const { data: vouchersData, isLoading: vouchersLoading } = useGetDiscountsQuery({
     q: "",
     discount_status: "active",
   });
@@ -209,7 +209,7 @@ function CheckoutPage() {
     }
   };
 
-  if (isLoading) {
+  if (isLoading && vouchersLoading) {
     return <SpinLoading />;
   }
   if (productCarts && productCarts.length === 0) {
