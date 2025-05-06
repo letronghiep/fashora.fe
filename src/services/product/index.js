@@ -67,10 +67,10 @@ export async function getInfoProduct(product_slug) {
     console.log(error);
   }
 }
-export async function addProductToWishList(productId) {
+export async function addProductToWishList(productId, customer_id) {
   try {
     const res = await axiosInstance.patch(
-      `${apiOrigin}/product/wishlist/${productId}`
+      `${apiOrigin}/product/wishlist/${productId}?customer_id=${customer_id}`
     );
     const data = await res.data;
     return data;
