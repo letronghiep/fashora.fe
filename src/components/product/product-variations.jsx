@@ -13,7 +13,7 @@ function ProductVariation({ variations, selectedOptions, setSelectedOptions }) {
       {variations.length > 0 &&
         variations.map((variation, index) => (
           <div className="flex items-start mb-6" key={index}>
-            <span className="w-[100px]">{variation.name}</span>
+            <span className="w-[100px]">{variation?.name}</span>
             <div className="flex items-center flex-wrap gap-x-2">
               {variation?.options?.map((option, optionIndex) => (
                 <div
@@ -28,7 +28,7 @@ function ProductVariation({ variations, selectedOptions, setSelectedOptions }) {
                   {variation?.images[optionIndex] && (
                     <img
                       src={modifyImageDimensions(
-                        variation.images[optionIndex],
+                        variation?.images[optionIndex],
                         20,
                         20
                       )}
