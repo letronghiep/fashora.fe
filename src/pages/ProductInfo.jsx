@@ -207,7 +207,7 @@ function ProductInfo() {
       setIsWishList(!isWishList);
       // Call API to add to wishlist
       await addProductToWishList(product._id, userData._id);
-      await updateFavoriteProduct(product._id);
+      await updateFavoriteProduct(product._id, userData._id);
       socket.emit("likeProduct", { productId: product._id });
     }
   };

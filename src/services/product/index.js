@@ -89,10 +89,10 @@ export async function increaseViewProduct(productId) {
     console.log(error);
   }
 }
-export async function updateFavoriteProduct(productId) {
+export async function updateFavoriteProduct(productId, customer_id) {
   try {
     const res = await axiosInstance.patch(
-      `${apiOrigin}/product/favorite/${productId}`
+      `${apiOrigin}/product/favorite/${productId}?customer_id=${customer_id}`
     );
     const data = await res.data;
     return data;
