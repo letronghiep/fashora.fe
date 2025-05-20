@@ -1,4 +1,4 @@
-import { Drawer, Layout, theme } from "antd";
+import { Drawer, Layout, notification, theme } from "antd";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import HomeHeader from "../components/header/Header";
@@ -6,9 +6,12 @@ import { getAuth } from "../stores/slices/authSlice";
 import Footer from "../components/Footer";
 import ShoppingCart from "../components/shopping-cart";
 import Chat from "../components/Chat";
+import { useLocation, useNavigate } from "react-router-dom";
 
 function HomeLayoutNoSidebar({ children }) {
   const { Content } = Layout;
+  const navigate = useNavigate();
+  const location = useLocation();
   const [openCart, setOpenCart] = useState(false);
   const onClose = () => {
     setOpenCart(false);
@@ -53,9 +56,25 @@ function HomeLayoutNoSidebar({ children }) {
 
     getUserData();
   }, [userData, dispatch]);
+  const handleOpenCart = () => {
+    if (!user || !user._id) {
+      notification.info({
+        message: "Vui lòng đăng nhập để mở giỏ hàng",
+        placement: "topRight",
+        duration: 2,
+        onClose: () => {
+          navigate(
+            `/login?redirectTo=${encodeURIComponent(location.pathname)}`
+          );
+        },
+      });
+    } else {
+      setOpenCart(true);
+    }
+  };
   return (
     <Layout>
-      <HomeHeader user={user} onOpenCart={setOpenCart} />
+      <HomeHeader user={user} onOpenCart={handleOpenCart} />
       <Content
         style={{
           maxWidth: "1440px",
@@ -81,7 +100,7 @@ function HomeLayoutNoSidebar({ children }) {
             onClose={onClose}
             open={openCart}
           >
-            <ShoppingCart onClose={() => setOpenCart(false)}/>
+            <ShoppingCart onClose={() => setOpenCart(false)} />
           </Drawer>
           <Chat />
         </Layout>

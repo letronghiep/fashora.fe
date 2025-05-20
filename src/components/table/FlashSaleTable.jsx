@@ -29,7 +29,7 @@ const FlashSaleTable = ({
       notification.success({
         message: "Xóa Flash Sale thành công",
         showProgress: true,
-        placement: "top",
+        placement: "topRight",
         onClose: () => {
           window.location.reload();
         },

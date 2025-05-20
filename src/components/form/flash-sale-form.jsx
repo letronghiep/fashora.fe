@@ -43,6 +43,7 @@ const FlashSaleForm = ({ initialData, onSubmit, loading }) => {
     formState: { errors },
   } = useForm({
     defaultValues: initialData || {
+
       name: "",
       thumb: "",
       start_time: null,
@@ -59,22 +60,22 @@ const FlashSaleForm = ({ initialData, onSubmit, loading }) => {
   const handleSearch = useCallback((value) => {
     // Xoá timeout cũ nếu có
     if (debounceRef.current) clearTimeout(debounceRef.current);
-  
+
     // Không tìm kiếm nếu ít hơn 2 ký tự
     if (value.trim().length < 2) {
       setSearchKey(""); // hoặc bỏ qua việc gọi API
       return;
     }
-  
+
     // Gán timeout mới
     debounceRef.current = setTimeout(() => {
       setSearchKey(value.trim()); // Truyền key vào useQuery để fetch
     }, 500); // 500ms delay
   }, []);
   const handleSelectProduct = (value, field) => {
-    const selectedProduct = searchResults?.metadata?.data?.find(
-      (p) => p.product_id === value
-    );
+    const selectedProduct = searchResults?.metadata?.data
+      ?.flatMap((p) => p.product_models)
+      ?.find((p) => p.sku_id === value);
     if (selectedProduct) {
       const currentProducts = watch("products") || [];
       const updatedProducts = [...currentProducts];
@@ -82,9 +83,10 @@ const FlashSaleForm = ({ initialData, onSubmit, loading }) => {
 
       updatedProducts[productIndex] = {
         product_id: selectedProduct.product_id,
-        original_price: selectedProduct.product_price,
-        sale_price: selectedProduct.product_price,
-        stock: selectedProduct.product_quantity,
+        sku_id: selectedProduct.sku_id,
+        original_price: Number(selectedProduct.sku_price),
+        sale_price: Number(selectedProduct.sku_sale_price),
+        stock: Number(selectedProduct.sku_stock),
         limit_quantity: 1,
         sold: 0,
       };
@@ -287,49 +289,71 @@ const FlashSaleForm = ({ initialData, onSubmit, loading }) => {
                               Tìm sản phẩm
                             </td>
                             <td className="flex-[6]">
-                              <Form.Item
-                                validateStatus={
-                                  errors.products?.[index]?.product_id
-                                    ? "error"
-                                    : ""
-                                }
-                                help={
-                                  errors.products?.[index]?.product_id?.message
-                                }
-                                style={{ marginBottom: 0 }}
-                              >
-                                <AutoComplete
-                                  options={searchResults?.metadata?.data?.map(
-                                    (product) => ({
-                                      value: product.product_id,
-                                      label: (
-                                        <div>
-                                          <div>
-                                            {product.product_name} (
-                                            {product.product_id})
-                                          </div>
-                                          <small>
-                                            Giá:{" "}
-                                            {product.product_price.toLocaleString()}{" "}
-                                            - Kho: {product.product_quantity}
-                                          </small>
-                                        </div>
-                                      ),
-                                    })
-                                  )}
-                                  onSearch={handleSearch}
-                                  onSelect={(value) =>
-                                    handleSelectProduct(value, {
-                                      name: index,
-                                    })
-                                  }
-                                  placeholder="Tìm kiếm sản phẩm"
-                                  notFoundContent={
-                                    isLoading ? <Spin size="small" /> : null
-                                  }
-                                  style={{ width: "100%" }}
-                                />
-                              </Form.Item>
+                              <Controller
+                                name={`products.${index}.sku_id`}
+                                control={control}
+                                render={({ field }) => (
+                                  <Form.Item
+                                    validateStatus={
+                                      errors.products?.[index]?.sku_id
+                                        ? "error"
+                                        : ""
+                                    }
+                                    help={
+                                      errors.products?.[index]?.sku_id
+                                        ?.message
+                                    }
+                                    style={{ marginBottom: 0 }}
+                                  >
+                                    <AutoComplete
+                                      options={searchResults?.metadata?.data?.flatMap(
+                                        (product) =>
+                                          product.product_models?.map(
+                                            (model) => ({
+                                              value: model.sku_id,
+                                              label: (
+                                                <div>
+                                                  <div>
+                                                    {model.product_name}
+                                                  </div>
+                                                  <small>
+                                                    {model.sku_name} - Giá:{" "}
+                                                    {model.sku_price?.toLocaleString() ||
+                                                      product.product_price.toLocaleString()}{" "}
+                                                    - Kho: {model.sku_stock}
+                                                  </small>
+                                                </div>
+                                              ),
+                                            })
+                                          ) || []
+                                      )}
+                                      onSearch={handleSearch}
+                                      onSelect={(value) =>
+                                        handleSelectProduct(value, {
+                                          name: index,
+                                        })
+                                      }
+                                      placeholder="Tìm kiếm sản phẩm"
+                                      notFoundContent={
+                                        isLoading ? <Spin size="small" /> : null
+                                      }
+                                      style={{ width: "100%" }}
+                                      value={field.value || ""}
+                                      onChange={(value) => {
+                                        field.onChange(value);
+                                        const updatedProducts = [
+                                          ...watch("products"),
+                                        ];
+                                        updatedProducts[index] = {
+                                          ...updatedProducts[index],
+                                          product_id: value,
+                                        };
+                                        setValue("products", updatedProducts);
+                                      }}
+                                    />
+                                  </Form.Item>
+                                )}
+                              />
                             </td>
                           </tr>
                           <tr className="my-6 flex gap-x-4">
@@ -363,7 +387,7 @@ const FlashSaleForm = ({ initialData, onSubmit, loading }) => {
                                           ","
                                         )
                                       }
-                                      value={product.original_price}
+                                      value={parseFloat(product.original_price)}
                                       parser={(value) =>
                                         value.replace(/\$\s?|(,*)/g, "")
                                       }
@@ -444,8 +468,19 @@ const FlashSaleForm = ({ initialData, onSubmit, loading }) => {
                                       {...field}
                                       style={{ width: "100%" }}
                                       min={1}
-                                      value={product.stock}
+                                      value={product.stock || 0}
                                       placeholder="Nhập số lượng"
+                                      onChange={(value) => {
+                                        field.onChange(value);
+                                        const updatedProducts = [
+                                          ...watch("products"),
+                                        ];
+                                        updatedProducts[index] = {
+                                          ...updatedProducts[index],
+                                          stock: value,
+                                        };
+                                        setValue("products", updatedProducts);
+                                      }}
                                     />
                                   </Form.Item>
                                 )}

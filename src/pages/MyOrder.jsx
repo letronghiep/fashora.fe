@@ -1,10 +1,26 @@
-import { Card, Typography, Space, Button, Tag, Empty, Pagination } from "antd";
-import { ShoppingOutlined, EyeOutlined, ClockCircleOutlined, DollarOutlined, ShoppingCartOutlined } from "@ant-design/icons";
+import {
+  Card,
+  Typography,
+  Space,
+  Button,
+  Tag,
+  Empty,
+  Pagination,
+  Result,
+} from "antd";
+import {
+  ShoppingOutlined,
+  EyeOutlined,
+  ClockCircleOutlined,
+  DollarOutlined,
+  ShoppingCartOutlined,
+} from "@ant-design/icons";
 import dayjs from "dayjs";
-import { useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useGetOrdersQuery } from "../apis/ordersApi";
 import { useEffect, useState } from "react";
 import SpinLoading from "../components/loading/SpinLoading";
+import { useSelector } from "react-redux";
 
 const { Title, Text } = Typography;
 
@@ -22,6 +38,7 @@ const statusColors = {
   refunded: "magenta", // Đã hoàn tiền
   failed_delivery: "error", // Giao hàng thất bại
   on_hold: "warning", // Đơn bị treo
+  canceled: "red", // Đã hủy
 };
 const statusName = {
   pending: "Chờ xác nhận",
@@ -37,20 +54,27 @@ const statusName = {
   refunded: "Đã hoàn tiền",
   failed_delivery: "Giao hàng thất bại",
   on_hold: "Đơn bị treo",
+  canceled: "Đã hủy",
 };
 const MyOrder = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const { user } = useSelector((state) => state.user);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(5);
-  const { data: ordersResponse, loading, refetch } = useGetOrdersQuery({
+  const {
+    data: ordersResponse,
+    loading,
+    refetch,
+  } = useGetOrdersQuery({
     page: currentPage,
-    limit: pageSize
+    limit: pageSize,
   });
   const [orders, setOrders] = useState([]);
   const [pagination, setPagination] = useState({
     current: 1,
     pageSize: 5,
-    total: 0
+    total: 0,
   });
 
   useEffect(() => {
@@ -60,7 +84,7 @@ const MyOrder = () => {
       setPagination({
         current: currentPage,
         pageSize: limit,
-        total: totalRows
+        total: totalRows,
       });
     }
   }, [ordersResponse, currentPage]);
@@ -68,10 +92,10 @@ const MyOrder = () => {
   const handlePageChange = async (page, size) => {
     setCurrentPage(page);
     setPageSize(size);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo({ top: 0, behavior: "smooth" });
     await refetch({
       page: page,
-      limit: size
+      limit: size,
     });
   };
 
@@ -80,31 +104,44 @@ const MyOrder = () => {
       style={{
         marginBottom: 16,
         borderRadius: 8,
-        boxShadow: '0 2px 8px rgba(0,0,0,0.08)'
+        boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
       }}
     >
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "flex-start",
+        }}
+      >
         <Space direction="vertical" size={12}>
           <Space>
-            <Text strong style={{ fontSize: 16 }}>Đơn hàng #{order.order_trackingNumber}</Text>
-            <Tag color={statusColors[order.order_status]} style={{ padding: '4px 12px', borderRadius: '16px' }}>
+            <Text strong style={{ fontSize: 16 }}>
+              Đơn hàng #{order.order_trackingNumber}
+            </Text>
+            <Tag
+              color={statusColors[order.order_status]}
+              style={{ padding: "4px 12px", borderRadius: "16px" }}
+            >
               {statusName[order.order_status]}
             </Tag>
           </Space>
-          
+
           <Space>
-            <ClockCircleOutlined style={{ color: '#8c8c8c' }} />
-            <Text type="secondary">{dayjs(order.date).format("DD/MM/YYYY HH:mm")}</Text>
+            <ClockCircleOutlined style={{ color: "#8c8c8c" }} />
+            <Text type="secondary">
+              {dayjs(order.date).format("DD/MM/YYYY HH:mm")}
+            </Text>
           </Space>
 
           <Space align="center">
-            <ShoppingCartOutlined style={{ color: '#8c8c8c' }} />
+            <ShoppingCartOutlined style={{ color: "#8c8c8c" }} />
             <Text>{order.order_items?.length || 0} sản phẩm</Text>
           </Space>
 
           <Space align="center">
-            <DollarOutlined style={{ color: '#52c41a' }} />
-            <Text strong style={{ color: '#52c41a', fontSize: 16 }}>
+            <DollarOutlined style={{ color: "#52c41a" }} />
+            <Text strong style={{ color: "#52c41a", fontSize: 16 }}>
               {order.order_checkout.totalPrice.toLocaleString("vi-VN")} đ
             </Text>
           </Space>
@@ -114,53 +151,72 @@ const MyOrder = () => {
           type="primary"
           icon={<EyeOutlined />}
           onClick={() => navigate(`/my-orders/${order._id}`)}
-          style={{ borderRadius: '6px' }}
+          style={{ borderRadius: "6px" }}
         >
           Chi tiết
         </Button>
       </div>
     </Card>
   );
-
+  if (!user || !user._id) {
+    return (
+      <Result
+        status="403"
+        title="403"
+        subTitle="Vui lòng đăng nhập để xem chi tiết đơn hàng."
+        extra={
+          <Link
+            to={`/login?redirectTo=${encodeURIComponent(location.pathname)}`}
+          >
+            <Button type="primary">Đi tới trang đăng nhập</Button>
+          </Link>
+        }
+      />
+    );
+  }
   if (loading) {
     return <SpinLoading />;
   }
 
   return (
-    <div style={{ padding: '24px', width: '1440px', margin: '0 auto' }}>
+    <div style={{ padding: "24px", width: "1440px", margin: "0 auto" }}>
       <Card
         title={
           <Space align="center" style={{ marginBottom: 16 }}>
-            <ShoppingOutlined style={{ fontSize: '24px', color: '#1890ff' }} />
-            <Title level={4} style={{ margin: 0 }}>Đơn hàng của tôi</Title>
+            <ShoppingOutlined style={{ fontSize: "24px", color: "#1890ff" }} />
+            <Title level={4} style={{ margin: 0 }}>
+              Đơn hàng của tôi
+            </Title>
           </Space>
         }
-        style={{ 
-          borderRadius: '8px',
-          boxShadow: '0 1px 2px rgba(0,0,0,0.1)'
+        style={{
+          borderRadius: "8px",
+          boxShadow: "0 1px 2px rgba(0,0,0,0.1)",
         }}
       >
         {orders.length > 0 ? (
           <>
-            <div style={{ padding: '8px 0' }}>
+            <div style={{ padding: "8px 0" }}>
               {orders.map((order) => (
                 <OrderCard key={order._id} order={order} />
               ))}
             </div>
-            <div style={{ 
-              display: 'flex', 
-              justifyContent: 'flex-end',
-              marginTop: 24,
-              borderTop: '1px solid #f0f0f0',
-              paddingTop: 24
-            }}>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "flex-end",
+                marginTop: 24,
+                borderTop: "1px solid #f0f0f0",
+                paddingTop: 24,
+              }}
+            >
               <Pagination
                 {...pagination}
                 onChange={handlePageChange}
                 onShowSizeChange={handlePageChange}
                 showTotal={(total) => `Tổng số ${total} đơn hàng`}
                 showSizeChanger
-                pageSizeOptions={['5', '10', '20', '50']}
+                pageSizeOptions={["5", "10", "20", "50"]}
               />
             </div>
           </>
@@ -168,7 +224,7 @@ const MyOrder = () => {
           <Empty
             image={Empty.PRESENTED_IMAGE_SIMPLE}
             description="Bạn chưa có đơn hàng nào"
-            style={{ margin: '40px 0' }}
+            style={{ margin: "40px 0" }}
           />
         )}
       </Card>

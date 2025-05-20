@@ -19,7 +19,7 @@ import CommentList from "../components/comment/comment-list";
 import ImageCarousel from "../components/ImageCarousel";
 import ProductSlide from "../components/product/product-slide";
 import ProductVariation from "../components/product/product-variations";
-import { validateFormMoney } from "../helpers";
+import { areEqual, validateFormMoney } from "../helpers";
 import { getAllCommentForProduct } from "../services/comment";
 import {
   addProductToWishList,
@@ -125,23 +125,32 @@ function ProductInfo() {
   const product_stock = useMemo(() => {
     if (!product) return 0;
     const foundModel = product.product_models.find(
-      (model) => model.sku_name === selectedCombination
+      (model) => areEqual(model.sku_name, selectedCombination)
     );
     if (foundModel) return foundModel.sku_stock;
     else return product.product_quantity;
-  }, [selectedCombination]);
+  }, [selectedCombination, product]);
   const product_price = useMemo(() => {
     if (!product) return 0;
     const foundModel = product.product_models.find(
-      (model) => model.sku_name === selectedCombination
+      (model) => areEqual(model.sku_name, selectedCombination)
     );
     if (foundModel) return foundModel.sku_price;
     else return product.product_price;
   }, [selectedCombination, product]);
+  const product_price_sale = useMemo(() => {
+    if (!product) return 0;
+    const foundModel = product.product_models.find(
+      (model) => areEqual(model.sku_name, selectedCombination)
+    );
+    if (foundModel && foundModel.sku_price_sale > 0 && foundModel.sku_price_sale < foundModel.sku_price) return foundModel.sku_price_sale;
+    else return product.product_price;
+  }, [selectedCombination, product]);
+
   useEffect(() => {
     if (selectedCombination) {
       const foundModel = product.product_models.find(
-        (model) => model.sku_name === selectedCombination
+        (model) => areEqual(model.sku_name, selectedCombination)
       );
       if (foundModel) setSku_id(foundModel.sku_id);
     }
@@ -266,10 +275,10 @@ function ProductInfo() {
             </div>
           </div>
           <div className="flex items-center gap-x-4 mb-4 p-4 bg-neutral-200/50">
-            {product.product_seller < product.product_price ? (
+            {product_price_sale < product.product_price ? (
               <>
                 <p className="text-3xl text-red-500 font-semibold">
-                  {validateFormMoney(product.product_seller)}{" "}
+                  {validateFormMoney(product_price_sale)}{" "}
                   <sup>
                     <u>đ</u>
                   </sup>

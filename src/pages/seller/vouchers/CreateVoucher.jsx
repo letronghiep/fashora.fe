@@ -28,7 +28,7 @@ function CreateVoucher() {
         notification.success({
           message: "Tạo danh mục thành công",
           showProgress: true,
-          placement: "top",
+          placement: "topRight",
           onClose: () => {
             // navigate("/login");
             reset();

@@ -21,7 +21,7 @@ function CreateCategory() {
         notification.success({
           message: "Tạo danh mục thành công",
           showProgress: true,
-          placement: "top",
+          placement: "topRight",
           onClose: () => {
             navigate("/seller/categories");
             reset();
@@ -33,7 +33,7 @@ function CreateCategory() {
         notification.error({
           message: error.message,
           showProgress: true,
-          placement: "top",
+          placement: "topRight",
         });
       }
     } catch (error) {

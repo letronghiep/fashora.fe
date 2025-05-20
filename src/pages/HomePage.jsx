@@ -28,6 +28,7 @@ function HomePage() {
     }
     fetchData();
   }, []);
+  
   const { data: homepage } = useGetHomepageQuery();
   return (
     <div>

@@ -18,8 +18,8 @@ export const vouchersApi = createApi({
   tagTypes: ["discounts"],
   endpoints: (builder) => ({
     getDiscounts: builder.query({
-      query: ({ q, discount_status }) => ({
-        url: `/discount?q=${q}&discount_status=${discount_status}`,
+      query: ({ q, discount_status, limit, page }) => ({
+        url: `/discount?q=${q}&discount_status=${discount_status}&limit=${limit}&page=${page}`,
         method: "GET",
       }),
       providesTags: ["discounts"],

@@ -17,7 +17,10 @@ function VoucherListPage() {
   const [searchParams, setSearchParams] = useSearchParams("");
   const [keySearch, setKeySearch] = useState("");
   const [pageSize, setPageSize] = useState(10);
-  
+  const [currentPage, setCurrentPage] = useState(1);
+  const handleChangePage = (page) => {
+    setCurrentPage(page);
+  };
   useEffect(() => {
     const limit = searchParams.get("limit");
     if (limit) {
@@ -32,6 +35,7 @@ function VoucherListPage() {
     q: searchParams.get("q") || "",
     discount_status: searchParams.get("discount_status") || "all",
     limit: pageSize,
+    page: currentPage.current,
   });
   const options = [
     {
@@ -162,10 +166,11 @@ function VoucherListPage() {
       </Flex>
       {/* List Product */}
       {/* <CategoriesTable data={categories?.metadata || []} /> */}
-      <DiscountTable 
-        data={discounts?.metadata || []} 
+      <DiscountTable
+        data={discounts?.metadata || []}
         pageSize={pageSize}
         setPageSize={setPageSize}
+        handleChangePage={handleChangePage}
       />
     </Flex>
   );

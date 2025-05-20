@@ -8,6 +8,7 @@ function FooterView({
   cancelLabel,
   onSubmit,
   onCancel,
+  isLoading,
 }) {
   const [isBottom, setIsBottom] = useState(false);
 
@@ -41,7 +42,7 @@ function FooterView({
       >
         {secondaryActionLabel}
       </Button>
-      <Button variant="outlined" type="primary" onClick={onSubmit}>
+      <Button variant="outlined" type="primary" onClick={onSubmit} loading={isLoading}>
         {actionLabel}
       </Button>
     </div>

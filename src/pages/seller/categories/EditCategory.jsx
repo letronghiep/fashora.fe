@@ -40,7 +40,7 @@ function EditCategory() {
       notification.success({
         message: "Cập nhật danh mục thành công",
         showProgress: true,
-        placement: "top",
+        placement: "topRight",
         onClose: () => {
           navigate("/seller/categories");
           reset();

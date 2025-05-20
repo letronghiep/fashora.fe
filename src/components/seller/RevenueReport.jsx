@@ -13,6 +13,7 @@ function RevenueReport({ revenueData, exportRevenueToCSV }) {
     previous_week,
     order_per,
     total_order,
+    revenue
   } = revenueData;
   
   const compareText = previous_week
@@ -49,22 +50,22 @@ function RevenueReport({ revenueData, exportRevenueToCSV }) {
         <Col span={8} gap={10}>
           <div>
             <StatisticCustom
-              value={current_week_revenue}
+              value={revenue}
               title="Tổng doanh thu"
             />
-            <GrowthIndicator
+            {/* <GrowthIndicator
               percentage={percentage_change}
               isPositive={!!percentage_change}
               comparisonPeriod={compareText}
-            />
+            /> */}
           </div>
           <div>
             <StatisticCustom value={total_order} title="Đơn hàng" />
-            <GrowthIndicator
+            {/* <GrowthIndicator
               percentage={order_per}
               isPositive={!!order_per}
               comparisonPeriod={compareText}
-            />
+            /> */}
           </div>
         </Col>
         <Col span={16}>

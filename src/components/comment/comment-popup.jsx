@@ -56,7 +56,7 @@ function CommentPopup({ openPopup, setOpenPopup, productId }) {
       notification.success({
         message: "Gửi đánh giá thành công",
         showProgress: true,
-        placement: "top",
+        placement: "topRight",
         onClose: () => {
           setOpenPopup(false);
           setValue(0);

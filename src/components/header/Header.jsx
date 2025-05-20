@@ -38,7 +38,7 @@ function HomeHeader({ user, onOpenCart }) {
         notification.success({
           message: "Logged out successfully",
           showProgress: true,
-          placement: "top",
+          placement: "topRight",
           onClose: () => {
             window.location.reload();
           },
@@ -48,7 +48,7 @@ function HomeHeader({ user, onOpenCart }) {
       notification.error({
         message: error,
         showProgress: true,
-        placement: "top",
+        placement: "topRight",
       });
     }
   };

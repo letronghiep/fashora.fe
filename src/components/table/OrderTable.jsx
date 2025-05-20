@@ -10,22 +10,30 @@ const OrderTable = ({ data, limit, setCurrentPage, isLoading }) => {
   const [orderData, setOrderData] = useState();
   const [status, setStatus] = useState();
   const [updateStatus] = useUpdateStatusMutation();
-  // const handleOpenModal = (id) => {
-  //   setIsModalOpen(true);
-  //   setTableId(id);  
-  // };
-  // const handleCancel = () => {
-  //   setIsModalOpen(false);
-  // };
-  // const handleOk = () => {
-  //   try {
 
-  //   } catch (error) {
-  //     console.log(error);
-  //   } finally {
-  //     setIsModalOpen(false);
-  //   }
-  // };
+  const orderStatusFlow = [
+    "pending",
+    "confirmed",
+    "processing",
+    "packed",
+    "delivering",
+    "shipped",
+    "completed",
+    "returned",
+    "exchanged",
+    "refunded",
+    "failed_delivery",
+    "on_hold",
+    "canceled",
+  ];
+
+  const isStatusDisabled = (statusValue) => {
+    if (!orderData?.order_status) return false;
+    const currentIndex = orderStatusFlow.indexOf(orderData.order_status);
+    const optionIndex = orderStatusFlow.indexOf(statusValue);
+    return optionIndex < currentIndex;
+  };
+
   const handleOpenPopupUpdate = (id) => {
     setIsPopupOpen(true);
     setTableId(id);
@@ -43,7 +51,7 @@ const OrderTable = ({ data, limit, setCurrentPage, isLoading }) => {
         notification.success({
           message: "Cap nhat trang thai thanh cong",
           showProgress: true,
-          placement: "top",
+          placement: "topRight",
           onClose: () => {
             window.location.reload();
           },
@@ -90,8 +98,8 @@ const OrderTable = ({ data, limit, setCurrentPage, isLoading }) => {
           case "completed":
             return <Tag color="success">Hoàn tất</Tag>;
 
-          case "cancelled":
-            return <Tag color="red">Đã hủy</Tag>;
+          case "failed_delivery":
+            return <Tag color="error">Giao hàng thất bại</Tag>;
 
           case "returned":
             return <Tag color="volcano">Khách trả hàng</Tag>;
@@ -102,12 +110,10 @@ const OrderTable = ({ data, limit, setCurrentPage, isLoading }) => {
           case "refunded":
             return <Tag color="magenta">Đã hoàn tiền</Tag>;
 
-          case "failed_delivery":
-            return <Tag color="error">Giao hàng thất bại</Tag>;
-
           case "on_hold":
             return <Tag color="warning">Tạm giữ</Tag>;
-
+          case "canceled":
+            return <Tag color="red">Đã hủy</Tag>;
           default:
             return <Tag>{status}</Tag>;
         }
@@ -160,16 +166,17 @@ const OrderTable = ({ data, limit, setCurrentPage, isLoading }) => {
   };
   return (
     <>
-      <Table 
-        columns={columns} 
-        dataSource={data.data} 
+      <Table
+        columns={columns}
+        dataSource={data.data}
         onChange={handleChangePage}
         loading={isLoading}
         pagination={{
           pageSize: limit,
           total: data.totalRows,
 
-          showTotal: (total, range) => `${range[0]}-${range[1]} của ${total} đơn hàng`,
+          showTotal: (total, range) =>
+            `${range[0]}-${range[1]} của ${total} đơn hàng`,
         }}
       />
       {/* <Modal
@@ -191,21 +198,72 @@ const OrderTable = ({ data, limit, setCurrentPage, isLoading }) => {
           onChange={(value) => setStatus(value)}
           value={status || orderData?.order_status}
         >
-          <Select.Option value="pending">Chờ xác nhận</Select.Option>
-          <Select.Option value="confirmed">Đã xác nhận</Select.Option>
-          <Select.Option value="processing">Đang xử lý</Select.Option>
-          <Select.Option value="packed">Đã đóng gói</Select.Option>
-          <Select.Option value="delivering">Đang giao hàng</Select.Option>
-          <Select.Option value="shipped">Đã giao hàng</Select.Option>
-          <Select.Option value="completed">Hoàn tất</Select.Option>
-          <Select.Option value="cancelled">Đã hủy</Select.Option>
-          <Select.Option value="returned">Khách trả hàng</Select.Option>
-          <Select.Option value="exchanged">Đã đổi hàng</Select.Option>
-          <Select.Option value="refunded">Đã hoàn tiền</Select.Option>
-          <Select.Option value="failed_delivery">
+          <Select.Option value="pending" disabled={isStatusDisabled("pending")}>
+            Chờ xác nhận
+          </Select.Option>
+          <Select.Option
+            value="confirmed"
+            disabled={isStatusDisabled("confirmed")}
+          >
+            Đã xác nhận
+          </Select.Option>
+          <Select.Option
+            value="processing"
+            disabled={isStatusDisabled("processing")}
+          >
+            Đang xử lý
+          </Select.Option>
+          <Select.Option value="packed" disabled={isStatusDisabled("packed")}>
+            Đã đóng gói
+          </Select.Option>
+          <Select.Option
+            value="delivering"
+            disabled={isStatusDisabled("delivering")}
+          >
+            Đang giao hàng
+          </Select.Option>
+          <Select.Option value="shipped" disabled={isStatusDisabled("shipped")}>
+            Đã giao hàng
+          </Select.Option>
+          <Select.Option
+            value="failed_delivery"
+            disabled={isStatusDisabled("failed_delivery")}
+          >
             Giao hàng thất bại
           </Select.Option>
-          <Select.Option value="on_hold">Tạm giữ</Select.Option>
+          <Select.Option
+            value="completed"
+            disabled={isStatusDisabled("completed")}
+          >
+            Hoàn tất
+          </Select.Option>
+          <Select.Option
+            value="returned"
+            disabled={isStatusDisabled("returned")}
+          >
+            Khách trả hàng
+          </Select.Option>
+          <Select.Option
+            value="exchanged"
+            disabled={isStatusDisabled("exchanged")}
+          >
+            Đã đổi hàng
+          </Select.Option>
+          <Select.Option
+            value="refunded"
+            disabled={isStatusDisabled("refunded")}
+          >
+            Đã hoàn tiền
+          </Select.Option>
+          <Select.Option value="on_hold" disabled={isStatusDisabled("on_hold")}>
+            Tạm giữ
+          </Select.Option>
+          <Select.Option
+            value="canceled"
+            disabled={isStatusDisabled("canceled")}
+          >
+            Đã hủy
+          </Select.Option>
         </Select>
       </Modal>
     </>

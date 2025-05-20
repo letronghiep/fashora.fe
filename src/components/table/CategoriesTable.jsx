@@ -26,7 +26,7 @@ const Categories = ({ data, pageSize, setPageSize }) => {
         notification.success({
           message: "Xóa danh mục thành công",
           showProgress: true,
-          placement: "top",
+          placement: "topRight",
           onClose: () => {
             window.location.reload();
           },

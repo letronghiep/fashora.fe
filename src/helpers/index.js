@@ -26,3 +26,13 @@ export const validateFormMoney = (money) => {
 export function modifyImageDimensions(url, newHeight, newWidth) {
   return url.replace(/h_\d+,w_\d+/, `h_${newHeight},w_${newWidth}`);
 }
+export function normalize(str) {
+  return str
+    .split(",") // Tách theo dấu phẩy
+    .map((s) => s.trim().toLowerCase()) // Xóa khoảng trắng và viết thường
+    .sort() // Sắp xếp lại
+    .join(","); // Ghép lại
+}
+export function areEqual(str1, str2) {
+  return normalize(str1) === normalize(str2);
+}

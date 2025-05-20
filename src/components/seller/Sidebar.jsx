@@ -61,76 +61,82 @@ const items = [
         label: <Link to="/seller/products">Danh sách sản phẩm</Link>,
         title: "/seller/products",
       },
+      
       {
         key: "9",
         label: <Link to="/seller/products/create">Thêm sản phẩm</Link>,
         title: "/seller/products/create",
       },
+      {
+        key: "10",
+        label: <Link to="/seller/products/inventory">Sản phẩm tồn kho</Link>,
+        title: "/seller/products/inventory",
+      },
     ],
   },
   {
-    key: "10",
+    key: "11",
     icon: <UserOutlined />,
     label: `Quản lý người dùng`,
     children: [
       {
-        key: "11",
+        key: "12",
         label: <Link to="/seller/users">Danh sách người dùng</Link>,
         title: "/seller/users",
       },
       {
-        key: "12",
+        key: "13",
         label: <Link to="/seller/users/create">Thêm người dùng</Link>,
         title: "/seller/users/create",
       },
     ],
   },
   {
-    key: "13",
+    key: "14",
     icon: <EuroOutlined />,
     label: `Quản lý mã giảm giá/voucher`,
     children: [
       {
-        key: "14",
+        key: "15",
         label: <Link to="/seller/vouchers">Danh sách vouchers</Link>,
         title: "/seller/vouchers",
       },
       {
-        key: "15",
+        key: "16",
         label: <Link to="/seller/vouchers/create">Thêm voucher</Link>,
         title: "/seller/vouchers/create",
       },
     ],
   },
   {
-    key: "16",
+    key: "17",
     icon: <PictureOutlined />,
     label: `Quản lý banner`,
     children: [
       {
-        key: "17",
+        key: "18",
         label: <Link to="/seller/banners">Danh sách banner</Link>,
         title: "/seller/banners",
       },
       {
-        key: "18",
+        key: "19",
         label: <Link to="/seller/banners/create">Thêm banner</Link>,
         title: "/seller/banners/create",
       },
     ],
   },
   {
-    key: "19",
+    key: "20",
     icon: <EuroOutlined />,
     label: `Quản lý flash sale`,
     children: [
       {
-        key: "20",
+        key: "21",
         label: <Link to="/seller/flashsale">Danh sách flash sale</Link>,
         title: "/seller/flashsale",
       },
       {
-        key: "21",
+        key: "22",
         label: <Link to="/seller/flashsale/create">Tạo flash sale</Link>,
         title: "/seller/flashsale/create",
       },

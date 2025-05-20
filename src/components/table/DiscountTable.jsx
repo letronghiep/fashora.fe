@@ -3,19 +3,24 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDeleteDiscountMutation } from "../../apis/vouchersApi";
 
-const DiscountTable = ({ data, pageSize, setPageSize }) => {
+const DiscountTable = ({ data, pageSize, setPageSize, handleChangePage }) => {
   const navigate = useNavigate();
+
   const columns = [
     {
       title: "Mã voucher",
       dataIndex: "discount_code",
       key: "discount_code",
+      width: "150px",
+      ellipsis: true,
       render: (text) => <a>{text}</a>,
     },
     {
       title: "Tên voucher",
       dataIndex: "discount_name",
       key: "discount_name",
+      width: "120px",
+      ellipsis: true,
       render: (text) => <a>{text}</a>,
     },
     {
@@ -25,8 +30,8 @@ const DiscountTable = ({ data, pageSize, setPageSize }) => {
       render: (discount_applies_to) => (
         <a>
           {discount_applies_to === "specific"
-            ? "Mã giảm giá cho sản phẩm"
-            : "Mã giảm giá toàn shop"}
+            ? "Cho sản phẩm"
+            : "Cho toàn shop"}
         </a>
       ),
     },
@@ -54,7 +59,6 @@ const DiscountTable = ({ data, pageSize, setPageSize }) => {
       title: "Trạng thái",
       dataIndex: "discount_status",
       key: "discount_status",
-      width: "200px",
       render: (text) => {
         switch (text) {
           case "pending":
@@ -135,7 +139,7 @@ const DiscountTable = ({ data, pageSize, setPageSize }) => {
         notification.success({
           message: "Xóa voucher thành công",
           showProgress: true,
-          placement: "top",
+          placement: "topRight",
           onClose: () => {
             window.location.reload();
           },
@@ -165,6 +169,7 @@ const DiscountTable = ({ data, pageSize, setPageSize }) => {
             setPageSize(pageSize);
           },
         }}
+        onChange={handleChangePage}
       />
       <Modal
         title="Xác nhận xóa"

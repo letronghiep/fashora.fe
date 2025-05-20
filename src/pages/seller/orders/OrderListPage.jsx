@@ -13,12 +13,10 @@ import {
 import { useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import SpinLoading from "~/components/loading/SpinLoading";
-import OrderTable from "../../../components/table/OrderTable";
-import { getOrderByUser } from "../../../services/seller/order";
-import { getShipment } from "../../../services/shipment";
-import { exportOrders } from "../../../services/order";
 import { useGetOrderForAdminQuery } from "../../../apis/ordersApi";
-
+import OrderTable from "../../../components/table/OrderTable";
+import { exportOrders } from "../../../services/order";
+import { getShipment } from "../../../services/shipment";
 function OrderListPage() {
   const { Title } = Typography;
   const { Option } = Select;

@@ -29,7 +29,7 @@ function EditVoucher() {
         notification.success({
           message: "Cập nhật thành công thành công",
           showProgress: true,
-          placement: "top",
+          placement: "topRight",
           onClose: () => {
             const redirect = new URLSearchParams(window.location.search).get("redirect");
             if (redirect) {

@@ -61,6 +61,33 @@ export const productsApi = createApi({
       }),
       providesTags: ["products"],
     }),
+    updateProduct: builder.mutation({
+      query: ({id, data}) => ({
+        url: `/product/seller/${id}`,
+        method: "PATCH",
+        body: data,
+      }),
+    }),
+    updateProductStatus: builder.mutation({
+      query: ({ id, data }) => ({
+        url: `/product/seller/status/${id}`,
+        method: "PATCH",
+        body: data,
+      }),
+    }),
+    updatePriceProduct: builder.mutation({
+      query: ({ id, data }) => ({
+        url: `/product/seller/price/${id}`,
+        method: "PATCH",
+        body: data,
+      }),
+    }),
+    getInventoriesProduct: builder.query({
+      query: ({page, limit}) => ({
+        url: `/inventory?page=${page}&limit=${limit}`,
+        method: "GET",
+      }),
+    }),
   }),
 });
 export const {
@@ -69,5 +96,9 @@ export const {
   useSearchProductQuery,
   useDeleteProductMutation,
   useGetFavoriteProductsQuery,
+  useUpdateProductMutation,
+  useUpdateProductStatusMutation,
+  useUpdatePriceProductMutation,
+  useGetInventoriesProductQuery,
 } = productsApi;
 export default productsApi;

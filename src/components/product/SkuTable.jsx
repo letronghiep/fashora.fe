@@ -2,36 +2,45 @@ import { Table } from "antd";
 import { useEffect, useMemo } from "react";
 import InputCustom from "../inputs/Input";
 
-const SkuTable = ({ control, watch, setValue, skuList }) => {
+const SkuTable = ({ control, watch, setValue, skuList, type = "", valueToAllSku }) => {
   const variations = watch("variations") || [];
 
   const generateSkuData = () => {
-    if (!variations.length) return [];
+    if (!variations.length && skuList && !skuList.length) return [];
 
     const headers = variations.map((v) => v.name).filter(Boolean);
     if (!headers.length) return [];
-
-    const combine = (arr1, arr2) =>
-      arr1.length === 0
-        ? arr2.map((item) => [item])
-        : arr1.flatMap((a) => arr2.map((b) => [...a, b]));
 
     const validVariations = variations.filter(
       (v) => v.name && v.options?.length
     );
     if (!validVariations.length) return [];
 
-    const allCombinations = validVariations.reduce(
-      (acc, variation) => combine(acc, variation.options || []),
-      []
+    // Tạo mảng các chỉ số cho mỗi biến thể
+    const indices = validVariations.map((v) =>
+      Array.from({ length: v.options.length }, (_, i) => i)
     );
 
-    return allCombinations.map((combination, index) => {
+    // Hàm tạo tổ hợp từ các chỉ số
+    const generateCombinations = (arrays) => {
+      if (arrays.length === 0) return [[]];
+
+      const [first, ...rest] = arrays;
+      const restCombinations = generateCombinations(rest);
+
+      return first.flatMap((num) =>
+        restCombinations.map((combination) => [num, ...combination])
+      );
+    };
+
+    const combinations = generateCombinations(indices);
+
+    return combinations.map((combination, index) => {
       const variationObj = {};
-      combination.forEach((value, idx) => {
+      combination.forEach((valueIndex, idx) => {
         const variation = validVariations[idx];
         if (variation) {
-          variationObj[variation.name] = value;
+          variationObj[variation.name] = variation.options[valueIndex];
         }
       });
       return {
@@ -40,11 +49,14 @@ const SkuTable = ({ control, watch, setValue, skuList }) => {
         sku_price: "",
         sku_stock: "",
         sku_code: "",
-        sku_name: combination.join(", "),
+        sku_tier_idx: combination,
+        sku_name: combination
+          .map((idx, i) => validVariations[i].options[idx])
+          .join(", "),
       };
     });
   };
-
+ 
   // Sửa lại cách sử dụng useMemo
   const skuData = useMemo(() => generateSkuData(), [generateSkuData]);
   // Thêm useEffect để theo dõi variations\
@@ -67,9 +79,30 @@ const SkuTable = ({ control, watch, setValue, skuList }) => {
   }, [variations, generateSkuData]); // Theo dõi trực tiếp variations
   useEffect(() => {
     if (skuList && skuList.length > 0) {
+      if (type === "import") {
+        skuList.forEach((sku) => {
+          sku.sku_stock = '';
+        });
+      }
       setValue("sku_list", skuList);
     }
   }, [skuList, setValue]);
+   // apply to all sku
+   useEffect(() => {
+    if (valueToAllSku) {
+      const newSkuData = generateSkuData();
+      if (newSkuData.length > 0) {
+        const data = newSkuData?.map((sku) => {
+          return {
+            ...sku,
+            sku_price: parseInt(valueToAllSku.product_price),
+            sku_stock: parseInt(valueToAllSku.product_quantity),
+          };
+        });
+        setValue("sku_list", data);
+      }
+    }
+  }, [valueToAllSku, setValue]);
   const columns = useMemo(
     () => [
       ...variations
@@ -85,6 +118,12 @@ const SkuTable = ({ control, watch, setValue, skuList }) => {
             return option || value;
           },
         })),
+      {
+        title: "Tier Index",
+        dataIndex: "sku_tier_idx",
+        key: "sku_tier_idx",
+        render: (value) => `[${value.join(", ")}]`,
+      },
       {
         title: "Giá",
         dataIndex: "sku_price",

@@ -35,7 +35,7 @@ function Register() {
       notification.error({
         message: error,
         showProgress: true,
-        placement: "top",
+        placement: "topRight",
       });
     }
   };

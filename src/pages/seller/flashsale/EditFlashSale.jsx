@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { apiOrigin } from "../../../constants";
 import { axiosInstance } from "../../../core/axiosInstance";
 import FlashSaleForm from "../../../components/form/flash-sale-form";
+import dayjs from "dayjs";
 
 const { Title } = Typography;
 
@@ -17,23 +18,26 @@ function EditFlashSale() {
     const fetchFlashSaleData = async () => {
       try {
         setLoading(true);
-        const response = await axiosInstance.get(`${apiOrigin}/flashsale/${id}`);
-        
-        if (response.data.code === 200) {
+        const response = await axiosInstance.get(
+          `${apiOrigin}/flashsale/${id}`
+        );
+
+        if (response.status === 200) {
           const flashSaleData = response.data.metadata;
-          
+
           // Chuyển đổi dữ liệu để phù hợp với form
           const formattedData = {
             name: flashSaleData.name,
+            thumb: flashSaleData.thumb,
             status: flashSaleData.status,
             isApproved: flashSaleData.isApproved,
             time: [
-              new Date(flashSaleData.start_time),
-              new Date(flashSaleData.end_time)
+              dayjs(flashSaleData.start_time),
+              dayjs(flashSaleData.end_time),
             ],
-            products: flashSaleData.products || []
+            products: flashSaleData.products || [],
           };
-          
+
           setInitialData(formattedData);
         } else {
           message.error("Không thể tải thông tin flash sale!");
@@ -53,20 +57,15 @@ function EditFlashSale() {
     }
   }, [id, navigate]);
 
-  const handleSubmit = async (formData) => {
+  const handleSubmit = async (data) => {
     try {
       setLoading(true);
-      const response = await axiosInstance.put(
+      const response = await axiosInstance.patch(
         `${apiOrigin}/flashsale/${id}`,
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
+        data
       );
 
-      if (response.data.code === 200) {
+      if (response.data.status === 200) {
         message.success("Cập nhật flash sale thành công!");
         navigate("/seller/flashsale");
       } else {
@@ -107,10 +106,10 @@ function EditFlashSale() {
 
       <div className="w-[50%] mx-auto">
         {initialData ? (
-          <FlashSaleForm 
-            initialData={initialData} 
-            onSubmit={handleSubmit} 
-            loading={loading} 
+          <FlashSaleForm
+            initialData={initialData}
+            onSubmit={handleSubmit}
+            loading={loading}
           />
         ) : (
           <div className="text-center py-8">

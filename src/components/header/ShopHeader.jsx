@@ -24,7 +24,7 @@ function ShopHeader({ bgColor = "#FFFFFF", user }) {
       // notification.success({
       //   message: "Logged out successfully",
       //   showProgress: true,
-      //   placement: "top",
+      //   placement: "topRight",
       //   onClose: () => {
       //     navigate("/login");
       //   },
@@ -34,7 +34,7 @@ function ShopHeader({ bgColor = "#FFFFFF", user }) {
         notification.success({
           message: "Logged out successfully",
           showProgress: true,
-          placement: "top",
+          placement: "topRight",
           onClose: () => {
             window.location.reload();
           },
@@ -44,7 +44,7 @@ function ShopHeader({ bgColor = "#FFFFFF", user }) {
       notification.error({
         message: error,
         showProgress: true,
-        placement: "top",
+        placement: "topRight",
       });
     }
   };

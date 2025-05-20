@@ -1,34 +1,37 @@
 import {
   Button,
   Card,
-  Steps,
+  Col,
   Descriptions,
   Image,
   Input,
   Modal,
   Rate,
+  Result,
   Row,
-  Col,
+  Steps,
   Table,
   Tag,
   Typography,
-  message,
   notification,
 } from "antd";
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
-import { useGetOrderDetailQuery } from "../apis/ordersApi";
+import { Link, useLocation, useParams } from "react-router-dom";
+import {
+  useCancelOrderMutation,
+  useGetOrderDetailQuery,
+} from "../apis/ordersApi";
 import SpinLoading from "../components/loading/SpinLoading";
 import UploadImage from "../components/upload";
 import { modifyImageDimensions } from "../helpers";
 import { createComment } from "../services/comment";
-
+import { useSelector } from "react-redux";
 const { TextArea } = Input;
 const { Text, Title } = Typography;
 
 const statusColors = {
   pending: "gold",
-  confirmed: "lime", 
+  confirmed: "lime",
   processing: "blue",
   packed: "geekblue",
   delivering: "cyan",
@@ -36,7 +39,7 @@ const statusColors = {
   completed: "success",
   cancelled: "red",
   returned: "volcano",
-  exchanged: "purple", 
+  exchanged: "purple",
   refunded: "magenta",
   failed_delivery: "error",
   on_hold: "warning",
@@ -44,7 +47,7 @@ const statusColors = {
 
 const statusName = {
   pending: "Chờ xác nhận",
-  confirmed: "Đã xác nhận", 
+  confirmed: "Đã xác nhận",
   processing: "Đang xử lý",
   packed: "Đã đóng gói",
   delivering: "Đang giao hàng",
@@ -65,6 +68,8 @@ const OrderDetailPage = () => {
   const [images, setImages] = useState();
   const [isModalOpen, setIsModalOpen] = useState(null);
   const [reviews, setReviews] = useState({});
+  const { user } = useSelector((state) => state.user);
+  const location = useLocation();
 
   useEffect(() => {
     if (orderResponse) {
@@ -124,13 +129,13 @@ const OrderDetailPage = () => {
       comment_rating: review.rating,
       productId: key,
     };
-    
+
     const response = await createComment(dataComment);
     if (response.status === 201) {
       notification.success({
         message: "Gửi đánh giá thành công",
         showProgress: true,
-        placement: "top",
+        placement: "topRight",
         onClose: () => {
           setIsModalOpen(null);
         },
@@ -147,6 +152,7 @@ const OrderDetailPage = () => {
       { status: "delivering", title: "Đang giao hàng" },
       { status: "shipped", title: "Đã giao hàng" },
       { status: "completed", title: "Hoàn tất" },
+      { status: "canceled", title: "Đã hủy" },
     ];
 
     // Tìm vị trí của trạng thái hiện tại
@@ -162,7 +168,10 @@ const OrderDetailPage = () => {
             current={-1}
             status="error"
             items={[
-              { title: "Đơn hàng", description: statusName[orderDetail.order_status] }
+              {
+                title: "Đơn hàng",
+                description: statusName[orderDetail.order_status],
+              },
             ]}
             progressDot
             style={{ padding: "24px 0" }}
@@ -174,7 +183,12 @@ const OrderDetailPage = () => {
     // Map các bước để hiển thị
     const items = orderSteps.map((step, index) => ({
       title: step.title,
-      status: index <= currentIndex ? (index === currentIndex ? "process" : "finish") : "wait"
+      status:
+        index <= currentIndex
+          ? index === currentIndex
+            ? "process"
+            : "finish"
+          : "wait",
     }));
 
     return (
@@ -243,7 +257,51 @@ const OrderDetailPage = () => {
         ]
       : []),
   ];
-
+  // cancel order
+  const [cancelOrder, { isLoading: isCancelLoading }] =
+    useCancelOrderMutation();
+  const handleCancelOrder = async () => {
+    const response = await cancelOrder(orderId);
+    if (response.data && response.data.status === 200) {
+      notification.success({
+        message: "Hủy đơn hàng thành công",
+        showProgress: true,
+        placement: "topRight",
+        onClose: () => {
+          setIsModalOpen(null);
+          window.location.reload();
+        },
+      });
+    } else {
+      Modal.error({
+        title: "Lỗi",
+        content: "Hủy đơn hàng thất bại",
+      });
+    }
+  };
+  const handleOpenCancelOrderModal = () => {
+    Modal.confirm({
+      title: "Hủy đơn hàng",
+      content: "Bạn có chắc chắn muốn hủy đơn hàng này không?",
+      onOk: handleCancelOrder,
+    });
+  };
+  if (!user || !user._id) {
+    return (
+      <Result
+        status="403"
+        title="403"
+        subTitle="Vui lòng đăng nhập để xem chi tiết đơn hàng."
+        extra={
+          <Link
+            to={`/login?redirectTo=${encodeURIComponent(location.pathname)}`}
+          >
+            <Button type="primary">Đi tới trang đăng nhập</Button>
+          </Link>
+        }
+      />
+    );
+  }
   if (isLoading || !orderDetail) {
     return <SpinLoading />;
   }
@@ -293,26 +351,56 @@ const OrderDetailPage = () => {
             <div style={{ padding: "0 16px" }}>
               <Row justify="space-between" style={{ marginBottom: 16 }}>
                 <Text>Tổng tiền hàng: </Text>
-                <Text>{orderDetail?.order_checkout.totalPrice?.toLocaleString("vi-VN")}{" "} đ</Text>
+                <Text>
+                  {orderDetail?.order_checkout.totalPrice?.toLocaleString(
+                    "vi-VN"
+                  )}{" "}
+                  đ
+                </Text>
               </Row>
               <Row justify="space-between" style={{ marginBottom: 16 }}>
                 <Text>Phí vận chuyển:</Text>
-                <Text>{orderDetail?.order_checkout.feeShip?.toLocaleString("vi-VN")}{" "} đ</Text>
+                <Text>
+                  {orderDetail?.order_checkout.feeShip?.toLocaleString("vi-VN")}{" "}
+                  đ
+                </Text>
               </Row>
               <Row justify="space-between" style={{ marginBottom: 16 }}>
                 <Text>Giảm giá:</Text>
-                <Text> - {orderDetail?.order_checkout.totalDiscount?.toLocaleString("vi-VN")}{" "} đ</Text>
+                <Text>
+                  {" "}
+                  -{" "}
+                  {orderDetail?.order_checkout.totalDiscount?.toLocaleString(
+                    "vi-VN"
+                  )}{" "}
+                  đ
+                </Text>
               </Row>
               <div style={{ border: "1px dashed #d9d9d9", margin: "16px 0" }} />
               <Row justify="space-between">
                 <Text strong>Thành tiền:</Text>
                 <Text strong style={{ fontSize: 18, color: "#ff4d4f" }}>
-                  {orderDetail?.order_checkout.totalCheckout?.toLocaleString("vi-VN")}{" "}
+                  {orderDetail?.order_checkout.totalCheckout?.toLocaleString(
+                    "vi-VN"
+                  )}{" "}
                   đ
                 </Text>
               </Row>
             </div>
           </Card>
+          {orderDetail.order_status === "pending" && (
+            <Button
+              style={{
+                marginTop: 16,
+                width: "100%",
+              }}
+              type="primary"
+              danger
+              onClick={handleOpenCancelOrderModal}
+            >
+              Hủy đơn hàng
+            </Button>
+          )}
         </Col>
       </Row>
 

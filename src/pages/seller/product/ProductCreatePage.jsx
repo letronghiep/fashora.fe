@@ -26,7 +26,7 @@ function ProductCreatePage() {
       notification.success({
         message: "Tạo sản phẩm thành công",
         showProgress: true,
-        placement: "top",
+        placement: "topRight",
         onClose: () => {
           navigate("/seller/products");
         },
@@ -35,7 +35,7 @@ function ProductCreatePage() {
       notification.error({
         message: "Something went wrong",
         showProgress: true,
-        placement: "top",
+        placement: "topRight",
       });
     }
   };

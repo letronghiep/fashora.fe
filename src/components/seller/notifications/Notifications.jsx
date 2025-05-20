@@ -10,26 +10,39 @@ function Notifications({ notifications }) {
       <Flex
         vertical
         align="center"
+        gap={10}
         style={{
           width: "100%",
-          height: "fit-content",
-          maxHeight: "100%",
+          maxHeight: "480px",
+          height: "100%",
           padding: "10px 20px",
           backgroundColor: "white",
           marginBottom: "20px",
           position: "relative",
+          overflowY: "auto",
+          scrollbarWidth: "thin",
+          scrollbarColor: "#d9d9d9 #f1f1f1",
+
+          "&::-webkit-scrollbar": {
+            width: "8px",
+          },
+          "&::-webkit-scrollbar-track": {
+            background: "#f1f1f1",
+          },
+          "&::-webkit-scrollbar-thumb": {
+            background: "#d9d9d9",
+            borderRadius: "4px",
+          },
         }}
       >
         <div className="relative w-fit">
           <h1 className="font-semibold">Thông báo!</h1>
-          {/* <span className="absolute -top-2 -right-7 rounded-full bg-[#1677ff] px-2 py-1 text-xs text-white">
-            {count}
-          </span> */}
         </div>
-        {notifications.length > 0 ? (
-          notifications.map(
-            (notify, idx) =>
-              idx < 6 && (
+        <div style={{ width: "100%" }}>
+          {notifications.length > 0 ? (
+            notifications
+              .slice(0, 6)
+              .map((notify) => (
                 <NotificationItem
                   key={notify.notify_id}
                   Icon={NotificationOutlined}
@@ -38,22 +51,26 @@ function Notifications({ notifications }) {
                   date={notify.createdAt}
                   isRead={notify.notify_isRead}
                 />
-              )
-          )
-        ) : (
-          <Empty
-            style={{
-              width: "100%",
-            }}
-            description="Không có thông báo mới"
-          />
-        )}
-        <Link
-          className="text-blue-400 hover:underline"
-          to="/seller/notifications"
+              ))
+          ) : (
+            <Empty
+              style={{
+                width: "100%",
+              }}
+              description="Không có thông báo mới"
+            />
+          )}
+        </div>
+        <div
+          style={{ marginTop: "auto", width: "100%", backgroundColor: "white" }}
         >
-          Xem tất cả
-        </Link>
+          <Link
+            className="text-blue-400 hover:underline block text-center"
+            to="/seller/notifications"
+          >
+            Xem tất cả
+          </Link>
+        </div>
       </Flex>
     </Suspense>
   );

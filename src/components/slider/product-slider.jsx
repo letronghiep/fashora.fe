@@ -7,7 +7,7 @@ import { modifyImageDimensions, validateFormMoney } from "../../helpers";
 function ProductSlide({ products, title, href }) {
   const scrollRef = useRef(null);
   const navigate = useNavigate();
-  
+
   const scroll = (direction) => {
     if (scrollRef.current) {
       const scrollAmount = 300; // Điều chỉnh khoảng cách scroll
@@ -42,7 +42,7 @@ function ProductSlide({ products, title, href }) {
               <div
                 ref={scrollRef}
                 className="flex overflow-x-auto gap-4 scroll-smooth no-scrollbar"
-                style={{ scrollbarWidth: 'none' }}
+                style={{ scrollbarWidth: "none" }}
               >
                 {products.map((product) => (
                   <Card
@@ -64,8 +64,18 @@ function ProductSlide({ products, title, href }) {
                       {product.product_name}
                     </p>
                     <p className="text-[#7C3FFF] font-semibold text-lg mt-2 mb-2">
-                      {validateFormMoney(product.product_price)} VND
+                      {product.product_seller > 0 &&
+                      product.product_seller < product.product_price
+                        ? validateFormMoney(product.product_seller)
+                        : validateFormMoney(product.product_price)}{" "}
+                      VND
                     </p>
+                    {product.product_seller > 0 &&
+                      product.product_seller < product.product_price && (
+                        <p className="text-gray-500 line-through text-sm">
+                          {validateFormMoney(product.product_price)} VND
+                        </p>
+                      )}
                   </Card>
                 ))}
               </div>

@@ -1,7 +1,6 @@
 import { Flex } from "antd";
 import { formatTime } from "../../../helpers/formatDate";
 import { readNotification } from "../../../services/notifications";
-
 function NotificationItem({ Icon, notify_id, notify_content, date, isRead }) {
   const handleReadNotification = async () => {
     // TODO: Read notification
@@ -9,7 +8,7 @@ function NotificationItem({ Icon, notify_id, notify_content, date, isRead }) {
   };
   return (
     <Flex
-      className={`cursor-pointer group py-4 ${!isRead ? 'bg-blue-50' : ''}`}
+      className={`cursor-pointer group py-4 ${!isRead ? "bg-blue-50" : ""}`}
       style={{
         width: "100%",
       }}
@@ -20,11 +19,13 @@ function NotificationItem({ Icon, notify_id, notify_content, date, isRead }) {
         <Icon
           style={{
             marginTop: "6px",
-            color: !isRead ? '#1677ff' : 'inherit'
+            color: !isRead ? "#1677ff" : "inherit",
           }}
         />
-        <div  
-          className={`text-sm group-hover:text-blue-500 ${!isRead ? 'font-medium' : ''}`}
+        <div
+          className={`text-sm group-hover:text-blue-500 ${
+            !isRead ? "font-medium" : ""
+          }`}
           dangerouslySetInnerHTML={{
             __html: notify_content,
           }}

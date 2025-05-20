@@ -32,9 +32,22 @@ function BestSeller({ data, title }) {
               <p className="text-base text-essential-800 ease-linear text-ellipsis line-clamp-2 overflow-hidden font-medium mt-3">
                 {product.product_name}
               </p>
-              <p className="text-[#7C3FFF] font-semibold text-lg mt-2 mb-2">
+              {/* <p className="text-[#7C3FFF] font-semibold text-lg mt-2 mb-2">
                 {validateFormMoney(product.product_price)} VND
+              </p> */}
+              <p className="text-[#7C3FFF] font-semibold text-lg mt-2 mb-2">
+                {product.product_seller > 0 &&
+                product.product_seller < product.product_price
+                  ? validateFormMoney(product.product_seller)
+                  : validateFormMoney(product.product_price)}{" "}
+                VND
               </p>
+              {product.product_seller > 0 &&
+                product.product_seller < product.product_price && (
+                  <p className="text-gray-500 line-through text-sm">
+                    {validateFormMoney(product.product_price)} VND
+                  </p>
+                )}
             </Card>
           ))}
         </div>

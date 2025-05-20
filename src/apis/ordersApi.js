@@ -69,7 +69,13 @@ export const ordersApi = createApi({
         method: "GET",
       }),
       providesTags: ["checkout"],
-    })
+    }),
+    cancelOrder: builder.mutation({
+      query: (order_id) => ({
+        url: "/checkout/canceled/" + order_id,
+        method: "PATCH",
+      }),
+    }),
   }),
 });
 export const {
@@ -79,6 +85,7 @@ export const {
   useUpdateStatusMutation,
   useCreateCheckoutOnlineMutation,
   useGetOrderDetailQuery,
-  useGetOrderForAdminQuery
+  useGetOrderForAdminQuery,
+  useCancelOrderMutation,
 } = ordersApi;
 export default ordersApi;

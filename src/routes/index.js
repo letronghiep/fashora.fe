@@ -35,58 +35,10 @@ import FlashsalePage from "../pages/seller/flashsale/FlashsalePage";
 import CreateFlashSale from "../pages/seller/flashsale/CreateFlashSale";
 import CreateBannerPage from "../pages/seller/banners/CreateBannerPage";
 import EditBannerPage from "../pages/seller/banners/EditBannerPage";
-import FlashSalePage from "../pages/seller/flashsale/FlashsalePage";
 import FlashSale from "../pages/FlashSale";
-// import ShopLayout from "../layout/ShopLayout";
-// import EditProfile from "../pages/seller/profile/edit/EditProfile";
-// import SalePage from "../pages/seller/SalePage";
+import InventoryPage from "../pages/InventoryPage";
+import EditFlashSale from "../pages/seller/flashsale/EditFlashSale";
 
-// export const routes = [
-//   {
-//     path: "/",
-//     component: HomePage,
-//     exact: true,
-//     private: false,
-//     layout: HomeLayout,
-//   },
-//   {
-//     path: "/login",
-//     component: LoginPage,
-//     exact: true,
-//     private: false,
-//   },
-//   {
-//     path: "/register",
-//     component: RegisterPage,
-//     private: false,
-//   },
-//   {
-//     path: "/seller",
-//     component: SalePage,
-//   },
-//   // Add more routes as needed...
-//   {
-//     path: "/unauthorized",
-//     component: UnauthorizedPage,
-//     private: false,
-//   },
-//   {
-//     path: "/seller/profile/edit/:userId",
-//     component: EditProfile,
-//     private: true,
-//   },
-//   {
-//     path: "*",
-//     exact: true,
-//     private: false,
-//   },
-//   {
-//     path: "/seller/*",
-//     private: true,
-//     layout: ShopLayout,
-//     permission: "shop",
-//   },
-// ];
 export const routes = [
   {
     path: "/",
@@ -251,6 +203,14 @@ export const routes = [
     permission: "shop",
   },
   {
+    path: "/seller/products/inventory",
+    component: InventoryPage,
+    exact: true,
+    private: true,
+    layout: ShopLayout,
+    permission: "shop",
+  },
+  {
     path: "/seller/products/edit/:productId",
     component: ProductEditPage,
     exact: true,
@@ -354,10 +314,12 @@ export const routes = [
     layout: ShopLayout,
     permission: "shop",
   },
-  // {
-  //   path: "/seller/flashsale/edit/:id",
-  //   component: EditFlashSale,
-  //   exact: true,
-  //   private: true,
-  // },
+  {
+    path: "/seller/flashsale/edit/:id",
+    component: EditFlashSale,
+    exact: true,
+    private: true,
+    layout: ShopLayout,
+    permission: "shop",
+  },
 ];

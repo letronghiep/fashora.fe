@@ -1,5 +1,5 @@
 import { PlusOutlined } from "@ant-design/icons";
-import { Cascader, Image, Typography, Upload } from "antd";
+import { Button, Cascader, Image, Typography, Upload } from "antd";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import "react-quill/dist/quill.snow.css";
@@ -20,6 +20,7 @@ function ProductForm({
   secondaryActionLabel,
   onSubmit,
   product,
+  isLoading,
 }) {
   const { Title } = Typography;
   const { handleSubmit, reset, control, watch, setValue, getValues } = useForm({
@@ -37,6 +38,10 @@ function ProductForm({
   const [variations, setVariations] = useState();
   const [isDraft, setIsDraft] = useState(false);
   const [selectedCategoryId, setSelectedCategoryId] = useState();
+  const [valueToAllSku, setValueToAllSku] = useState({
+    product_price: "",
+    product_quantity: "",
+  });
   const getBase64 = useCallback(
     (file) =>
       new Promise((resolve, reject) => {
@@ -198,7 +203,12 @@ function ProductForm({
   const options = useMemo(() => {
     return transformCategories(categories);
   }, [categories]);
-  console.log(options);
+  const handleApplyToAll = () => {
+    setValueToAllSku({
+      product_price: watch("product_price"),
+      product_quantity: watch("product_quantity"),
+    });
+  };
   return (
     <form onSubmit={handleSubmit(onSubmitHandler)} className="w-full bg-white">
       <div className="border-b border-gray-900/10 p-6">
@@ -310,13 +320,19 @@ function ProductForm({
       <div className="border-b border-gray-900/10 p-6">
         <Title level={3}>Thông tin chi tiết</Title>
         <div className="mt-10 space-y-10">
-          <Attribute
-            attributes={attributes && attributes[0]?.attribute_list}
-            control={control}
-            brandName="product_brand"
-            brands={brands && brands.brand_list}
-            setValue={setValue}
-          />
+          {selectedCategoryId ? (
+            <Attribute
+              attributes={attributes && attributes[0]?.attribute_list}
+              control={control}
+              brandName="product_brand"
+              brands={brands && brands.brand_list}
+              setValue={setValue}
+            />
+          ) : (
+            <p className="italic text-gray-500 text-sm">
+              Cần chọn danh mục để hiển thị thông tin thuộc tính
+            </p>
+          )}
         </div>
       </div>
       <div className="border-b border-gray-900/10 p-6">
@@ -336,29 +352,43 @@ function ProductForm({
                 label="Giá"
                 type="number"
               />
+              {variations && variations.length > 0 && (
+                <div className="flex items-center gap-x-4 sm:col-span-3">
+                  <Button onClick={handleApplyToAll}>Áp dụng cho tất cả</Button>
+                </div>
+              )}
             </div>
           </div>
         </div>
       </div>
 
       <div className="border-b border-gray-900/10 p-6">
-        <Title level={3}>Phân loại hàng</Title>
-        <div className="mt-10 space-y-10">
-          <VariationForm
-            variations={variations}
-            control={control}
-            watch={watch}
-            setValue={setValue}
-            getValues={getValues}
-          />
-          <SkuTable
-            control={control}
-            watch={watch}
-            setValue={setValue}
-            getValues={getValues}
-            skuList={product?.product_models}
-          />
-        </div>
+        {selectedCategoryId ? (
+          <>
+            <Title level={3}>Phân loại hàng</Title>
+            <div className="mt-10 space-y-10">
+              <VariationForm
+                variations={variations}
+                control={control}
+                watch={watch}
+                setValue={setValue}
+                getValues={getValues}
+              />
+              <SkuTable
+                control={control}
+                watch={watch}
+                setValue={setValue}
+                getValues={getValues}
+                skuList={product?.product_models}
+                valueToAllSku={valueToAllSku}
+              />
+            </div>
+          </>
+        ) : (
+          <p className="italic text-gray-500 text-sm">
+            Cần chọn danh mục để hiển thị thông tin phân loại hàng
+          </p>
+        )}
       </div>
 
       <FooterView
@@ -369,6 +399,7 @@ function ProductForm({
         isDraft={isDraft}
         setIsDraft={setIsDraft}
         onCancel={handleCancel}
+        isLoading={isLoading}
       />
     </form>
   );

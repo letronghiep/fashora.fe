@@ -1,20 +1,39 @@
-import { Row, Col, Empty, Typography, Spin } from "antd";
+import { Row, Col, Empty, Typography, Spin, Result, Button } from "antd";
 import ProductCard from "../components/product/product-card";
 import { HeartOutlined } from "@ant-design/icons";
 import { useGetFavoriteProductsQuery } from "../apis/productsApi";
 import { useEffect, useState } from "react";
+import { Link, useLocation } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 const { Title } = Typography;
 
 const FavoriteProductPage = () => {
   const { data, isLoading } = useGetFavoriteProductsQuery();
   const [favoriteProducts, setFavoriteProducts] = useState([]);
+  const { user } = useSelector((state) => state.user);
+  const location = useLocation();
   useEffect(() => {
     if (data) {
       setFavoriteProducts(data?.metadata.data);
     }
   }, [data]);
-
+  if (!user || !user._id) {
+    return (
+      <Result
+        status="403"
+        title="403"
+        subTitle="Vui lòng đăng nhập để xem sản phẩm yêu thích."
+        extra={
+          <Link
+            to={`/login?redirectTo=${encodeURIComponent(location.pathname)}`}
+          >
+            <Button type="primary">Đi tới trang đăng nhập</Button>
+          </Link>
+        }
+      />
+    );
+  }
   if (isLoading) {
     return (
       <div className="flex justify-center items-center min-h-[400px]">
